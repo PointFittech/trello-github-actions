@@ -173,6 +173,38 @@ function moveCardWhenPullRequestClose(apiKey, apiToken, boardId) {
 	});
 }
 
+function moveCardWhenIssueClose(apiKey, apiToken, boardId) {
+	const departureListId = process.env['TRELLO_DEPARTURE_LIST_ID'];
+	const destinationListId = process.env['TRELLO_DESTINATION_LIST_ID'];
+	const issue = github.context.payload.issue;
+	if (!issue) return;
+	const issue_number = issue.number;
+
+	getCardsOfList(apiKey, apiToken, departureListId).then(function (response) {
+		const cards = response;
+		let cardId;
+		let existingMemberIds: string[] = [];
+		cards.some(function (card) {
+			const card_issue_number = card.name.match(/#[0-9]+/)[0].slice(1);
+			if (card_issue_number == issue_number) {
+				cardId = card.id;
+				existingMemberIds = card.idMembers;
+				return true;
+			}
+		});
+		const cardParams = {
+			destinationListId: destinationListId,
+			memberIds: existingMemberIds.join(),
+		};
+
+		if (cardId) {
+			putCard(apiKey, apiToken, cardId, cardParams);
+		} else {
+			core.setFailed('Card not found.');
+		}
+	});
+}
+
 function getLabelsOfBoard(apiKey, apiToken, boardId): Promise<any> {
 	return new Promise(function (resolve, reject) {
 		fetch(
