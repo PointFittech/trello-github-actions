@@ -1,5 +1,5 @@
-import * as github from '@actions/github';
 import * as core from '@actions/core';
+import * as github from '@actions/github';
 
 try {
 	const apiKey = process.env['TRELLO_API_KEY'];
@@ -35,9 +35,9 @@ function createCardWhenIssueOpen(apiKey, apiToken, boardId) {
 
 	getLabelsOfBoard(apiKey, apiToken, boardId).then(function (response) {
 		const trelloLabels = response;
-		const trelloLabelIds = [];
+		const trelloLabelIds: any[] = [];
 		issueLabelNames.forEach(function (issueLabelName) {
-			trelloLabels.forEach(function (trelloLabel) {
+			trelloLabels.forEach(function (trelloLabel: any) {
 				if (trelloLabel.name == issueLabelName) {
 					trelloLabelIds.push(trelloLabel.id);
 				}
@@ -46,9 +46,9 @@ function createCardWhenIssueOpen(apiKey, apiToken, boardId) {
 
 		getMembersOfBoard(apiKey, apiToken, boardId).then(function (response) {
 			const members = response;
-			const memberIds = [];
+			const memberIds: any[] = [];
 			assignees.forEach(function (assignee) {
-				members.forEach(function (member) {
+				members.forEach(function (member: any) {
 					if (member.username == assignee) {
 						memberIds.push(member.id);
 					}
@@ -77,7 +77,7 @@ function moveCardWhenPullRequestOpen(apiKey, apiToken, boardId) {
 	const destinationListId = process.env['TRELLO_DESTINATION_LIST_ID'];
 	const pullRequest = github.context.payload.pull_request;
 	if (!pullRequest) return;
-	const issue_number = pullRequest.body.match(/#[0-9]+/)?[0].slice(1);
+	const issue_number = pullRequest.body?.match(/#[0-9]+/)?.[0].slice(1);
 	const url = pullRequest.html_url;
 	const reviewers = pullRequest.requested_reviewers.map(
 		(reviewer) => reviewer.login
@@ -85,7 +85,7 @@ function moveCardWhenPullRequestOpen(apiKey, apiToken, boardId) {
 
 	getMembersOfBoard(apiKey, apiToken, boardId).then(function (response) {
 		const members = response;
-		const additionalMemberIds = [];
+		const additionalMemberIds: string[] = [];
 		reviewers.forEach(function (reviewer) {
 			members.forEach(function (member) {
 				if (member.username == reviewer) {
@@ -97,7 +97,7 @@ function moveCardWhenPullRequestOpen(apiKey, apiToken, boardId) {
 		getCardsOfList(apiKey, apiToken, departureListId).then(function (response) {
 			const cards = response;
 			let cardId;
-			let existingMemberIds = [];
+			let existingMemberIds: string[] = [];
 			cards.some(function (card) {
 				const card_issue_number = card.name.match(/#[0-9]+/)[0].slice(1);
 				if (card_issue_number == issue_number) {
@@ -126,17 +126,21 @@ function moveCardWhenPullRequestClose(apiKey, apiToken, boardId) {
 	const departureListId = process.env['TRELLO_DEPARTURE_LIST_ID'];
 	const destinationListId = process.env['TRELLO_DESTINATION_LIST_ID'];
 	const pullRequest = github.context.payload.pull_request;
-	const issue_number = pullRequest.body.match(/#[0-9]+/)[0].slice(1);
-	const url = pullRequest.html_url;
+	if (!pullRequest) return;
+
+	const issue_numbers = pullRequest.body?.match(/#[0-9]+/);
+	if (!issue_numbers || issue_numbers.length === 0) return;
+
+	const issue_number = issue_numbers[0].slice(1);
 	const reviewers = pullRequest.requested_reviewers.map(
 		(reviewer) => reviewer.login
 	);
 
 	getMembersOfBoard(apiKey, apiToken, boardId).then(function (response) {
 		const members = response;
-		const additionalMemberIds = [];
+		const additionalMemberIds: string[] = [];
 		reviewers.forEach(function (reviewer) {
-			members.forEach(function (member) {
+			members.forEach(function (member: any) {
 				if (member.username == reviewer) {
 					additionalMemberIds.push(member.id);
 				}
@@ -146,7 +150,7 @@ function moveCardWhenPullRequestClose(apiKey, apiToken, boardId) {
 		getCardsOfList(apiKey, apiToken, departureListId).then(function (response) {
 			const cards = response;
 			let cardId;
-			let existingMemberIds = [];
+			let existingMemberIds: string[] = [];
 			cards.some(function (card) {
 				const card_issue_number = card.name.match(/#[0-9]+/)[0].slice(1);
 				if (card_issue_number == issue_number) {
@@ -229,7 +233,7 @@ function createCard(apiKey, apiToken, listId, params) {
 		json: true,
 	};
 	return new Promise(function (resolve, reject) {
-		fetch(options)
+		fetch(options.url, { method: 'POST', body: JSON.stringify(options.form) })
 			.then(function (body) {
 				resolve(body);
 			})
@@ -249,7 +253,7 @@ function putCard(apiKey, apiToken, cardId, params) {
 		},
 	};
 	return new Promise(function (resolve, reject) {
-		fetch(options)
+		fetch(options.url, { method: 'POST', body: JSON.stringify(options.form) })
 			.then(function (body) {
 				resolve(body.json());
 			})
@@ -268,7 +272,7 @@ function addUrlSourceToCard(apiKey, apiToken, cardId, url) {
 		},
 	};
 	return new Promise(function (resolve, reject) {
-		fetch(options)
+		fetch(options.url, { method: 'POST', body: JSON.stringify(options.form) })
 			.then(function (body) {
 				resolve(body.json());
 			})
