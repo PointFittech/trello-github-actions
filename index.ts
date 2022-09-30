@@ -17,6 +17,9 @@ try {
 		case 'move_card_when_pull_request_closed':
 			moveCardWhenPullRequestClose(apiKey, apiToken, boardId);
 			break;
+		case 'move_card_when_issue_closed':
+			moveCardWhenIssueClose(apiKey, apiToken);
+			break;
 	}
 } catch (error) {
 	core.setFailed(error.message);
@@ -173,7 +176,7 @@ function moveCardWhenPullRequestClose(apiKey, apiToken, boardId) {
 	});
 }
 
-function moveCardWhenIssueClose(apiKey, apiToken, boardId) {
+function moveCardWhenIssueClose(apiKey, apiToken) {
 	const departureListId = process.env['TRELLO_DEPARTURE_LIST_ID'];
 	const destinationListId = process.env['TRELLO_DESTINATION_LIST_ID'];
 	const issue = github.context.payload.issue;
