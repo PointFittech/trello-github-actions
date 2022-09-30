@@ -1,6 +1,6 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
-
+import fetch from 'node-fetch';
 try {
 	const apiKey = process.env['TRELLO_API_KEY'];
 	const apiToken = process.env['TRELLO_API_TOKEN'];
