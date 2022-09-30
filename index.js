@@ -2,6 +2,7 @@
 exports.__esModule = true;
 var core = require("@actions/core");
 var github = require("@actions/github");
+var node_fetch_1 = require("node-fetch");
 try {
     var apiKey = process.env['TRELLO_API_KEY'];
     var apiToken = process.env['TRELLO_API_TOKEN'];
@@ -197,7 +198,7 @@ function moveCardWhenIssueClose(apiKey, apiToken) {
 }
 function getLabelsOfBoard(apiKey, apiToken, boardId) {
     return new Promise(function (resolve, reject) {
-        fetch("https://api.trello.com/1/boards/" + boardId + "/labels?key=" + apiKey + "&token=" + apiToken)
+        node_fetch_1["default"]("https://api.trello.com/1/boards/" + boardId + "/labels?key=" + apiKey + "&token=" + apiToken)
             .then(function (body) {
             resolve(body.json());
         })["catch"](function (error) {
@@ -207,7 +208,7 @@ function getLabelsOfBoard(apiKey, apiToken, boardId) {
 }
 function getMembersOfBoard(apiKey, apiToken, boardId) {
     return new Promise(function (resolve, reject) {
-        fetch("https://api.trello.com/1/boards/" + boardId + "/members?key=" + apiKey + "&token=" + apiToken)
+        node_fetch_1["default"]("https://api.trello.com/1/boards/" + boardId + "/members?key=" + apiKey + "&token=" + apiToken)
             .then(function (body) {
             resolve(body.json());
         })["catch"](function (error) {
@@ -217,7 +218,7 @@ function getMembersOfBoard(apiKey, apiToken, boardId) {
 }
 function getCardsOfList(apiKey, apiToken, listId) {
     return new Promise(function (resolve, reject) {
-        fetch("https://api.trello.com/1/lists/" + listId + "/cards?key=" + apiKey + "&token=" + apiToken)
+        node_fetch_1["default"]("https://api.trello.com/1/lists/" + listId + "/cards?key=" + apiKey + "&token=" + apiToken)
             .then(function (body) {
             resolve(body.json());
         })["catch"](function (error) {
@@ -243,7 +244,7 @@ function createCard(apiKey, apiToken, listId, params) {
         json: true
     };
     return new Promise(function (resolve, reject) {
-        fetch(options.url, { method: 'POST', body: JSON.stringify(options.form) })
+        node_fetch_1["default"](options.url, { method: 'POST', body: JSON.stringify(options.form) })
             .then(function (body) {
             resolve(body);
         })["catch"](function (error) {
@@ -261,7 +262,7 @@ function putCard(apiKey, apiToken, cardId, params) {
         }
     };
     return new Promise(function (resolve, reject) {
-        fetch(options.url, { method: 'POST', body: JSON.stringify(options.form) })
+        node_fetch_1["default"](options.url, { method: 'POST', body: JSON.stringify(options.form) })
             .then(function (body) {
             resolve(body.json());
         })["catch"](function (error) {
@@ -278,7 +279,7 @@ function addUrlSourceToCard(apiKey, apiToken, cardId, url) {
         }
     };
     return new Promise(function (resolve, reject) {
-        fetch(options.url, { method: 'POST', body: JSON.stringify(options.form) })
+        node_fetch_1["default"](options.url, { method: 'POST', body: JSON.stringify(options.form) })
             .then(function (body) {
             resolve(body.json());
         })["catch"](function (error) {

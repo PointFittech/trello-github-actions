@@ -1,28 +1,29 @@
 {
-  "name": "trello-github-actions",
-  "version": "1.0.0",
-  "description": "Link Trello and Github Actions",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jessicazu/trello-github-actions.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/jessicazu/trello-github-actions/issues"
-  },
-  "homepage": "https://github.com/jessicazu/trello-github-actions#readme",
-  "dependencies": {
-    "@actions/core": "^1.2.2",
-    "@actions/github": "^2.1.1",
-    "@types/node": "^18.7.23",
-    "node-fetch": "^2.6.7",
-    "request": "^2.88.2",
-    "request-promise-native": "^1.0.8"
-  }
+    "name": "trello-github-actions",
+    "version": "1.0.0",
+    "description": "Link Trello and Github Actions",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "deploy": "ts-node --transpileOnly index.ts && git commit -a -m 'Deploy' && git push"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jessicazu/trello-github-actions.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/jessicazu/trello-github-actions/issues"
+    },
+    "homepage": "https://github.com/jessicazu/trello-github-actions#readme",
+    "dependencies": {
+        "@actions/core": "^1.2.2",
+        "@actions/github": "^2.1.1",
+        "@types/node": "^18.7.23",
+        "node-fetch": "^2.6.7",
+        "request": "^2.88.2",
+        "request-promise-native": "^1.0.8"
+    }
 }
