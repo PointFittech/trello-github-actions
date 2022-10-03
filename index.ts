@@ -251,7 +251,7 @@ function getCardsOfList(apiKey, apiToken, listId): Promise<any> {
 	});
 }
 
-function createCard(apiKey, apiToken, listId, params) {
+export function createCard(apiKey, apiToken, listId, params) {
 	const options = {
 		method: 'POST',
 		url: 'https://api.trello.com/1/cards',
@@ -268,10 +268,15 @@ function createCard(apiKey, apiToken, listId, params) {
 		},
 		json: true,
 	};
-	const fData = new FormData();
-	for (let [key, val] of Object.entries(options.form)) fData.append(key, val);
 	return new Promise(function (resolve, reject) {
-		fetch(options.url, { method: 'POST', body: fData })
+		fetch(options.url, {
+			method: 'POST',
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(options.form),
+		})
 			.then(function (body) {
 				resolve(body);
 			})
@@ -290,10 +295,15 @@ function putCard(apiKey, apiToken, cardId, params) {
 			idMembers: params.memberIds,
 		},
 	};
-	const fData = new FormData();
-	for (let [key, val] of Object.entries(options.form)) fData.append(key, val);
 	return new Promise(function (resolve, reject) {
-		fetch(options.url, { method: 'POST', body: fData })
+		fetch(options.url, {
+			method: 'POST',
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(options.form),
+		})
 			.then(function (body) {
 				resolve(body.json());
 			})
@@ -311,10 +321,15 @@ function addUrlSourceToCard(apiKey, apiToken, cardId, url) {
 			url: url,
 		},
 	};
-	const fData = new FormData();
-	for (let [key, val] of Object.entries(options.form)) fData.append(key, val);
 	return new Promise(function (resolve, reject) {
-		fetch(options.url, { method: 'POST', body: fData })
+		fetch(options.url, {
+			method: 'POST',
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(options.form),
+		})
 			.then(function (body) {
 				resolve(body.json());
 			})
