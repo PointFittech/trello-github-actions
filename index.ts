@@ -1,6 +1,7 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import fetch from 'node-fetch';
+import FormData from 'form-data';
 try {
 	const apiKey = process.env['TRELLO_API_KEY'];
 	const apiToken = process.env['TRELLO_API_TOKEN'];
@@ -267,8 +268,10 @@ function createCard(apiKey, apiToken, listId, params) {
 		},
 		json: true,
 	};
+	const fData = new FormData();
+	for (let [key, val] of Object.entries(options.form)) fData.append(key, val);
 	return new Promise(function (resolve, reject) {
-		fetch(options.url, { method: 'POST', body: JSON.stringify(options.form) })
+		fetch(options.url, { method: 'POST', body: fData })
 			.then(function (body) {
 				resolve(body);
 			})
@@ -287,8 +290,10 @@ function putCard(apiKey, apiToken, cardId, params) {
 			idMembers: params.memberIds,
 		},
 	};
+	const fData = new FormData();
+	for (let [key, val] of Object.entries(options.form)) fData.append(key, val);
 	return new Promise(function (resolve, reject) {
-		fetch(options.url, { method: 'POST', body: JSON.stringify(options.form) })
+		fetch(options.url, { method: 'POST', body: fData })
 			.then(function (body) {
 				resolve(body.json());
 			})
@@ -306,8 +311,10 @@ function addUrlSourceToCard(apiKey, apiToken, cardId, url) {
 			url: url,
 		},
 	};
+	const fData = new FormData();
+	for (let [key, val] of Object.entries(options.form)) fData.append(key, val);
 	return new Promise(function (resolve, reject) {
-		fetch(options.url, { method: 'POST', body: JSON.stringify(options.form) })
+		fetch(options.url, { method: 'POST', body: fData })
 			.then(function (body) {
 				resolve(body.json());
 			})
