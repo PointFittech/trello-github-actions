@@ -1,11 +1,64 @@
-import * as core from '@actions/core';
-import * as github from '@actions/github';
-import fetch from 'node-fetch';
+'use strict';
+var __createBinding =
+    (this && this.__createBinding) ||
+    (Object.create ?
+
+        function(o, m, k, k2) {
+            if (k2 === undefined) k2 = k;
+            var desc = Object.getOwnPropertyDescriptor(m, k);
+            if (!desc ||
+                ('get' in desc ? !m.__esModule : desc.writable || desc.configurable)
+            ) {
+                desc = {
+                    enumerable: true,
+                    get: function() {
+                        return m[k];
+                    },
+                };
+            }
+            Object.defineProperty(o, k2, desc);
+        } :
+        function(o, m, k, k2) {
+            if (k2 === undefined) k2 = k;
+            o[k2] = m[k];
+        });
+var __setModuleDefault =
+    (this && this.__setModuleDefault) ||
+    (Object.create ?
+
+        function(o, v) {
+            Object.defineProperty(o, 'default', { enumerable: true, value: v });
+        } :
+        function(o, v) {
+            o['default'] = v;
+        });
+var __importStar =
+    (this && this.__importStar) ||
+    function(mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null)
+            for (var k in mod)
+                if (k !== 'default' && Object.prototype.hasOwnProperty.call(mod, k))
+                    __createBinding(result, mod, k);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+var __importDefault =
+    (this && this.__importDefault) ||
+    function(mod) {
+        return mod && mod.__esModule ? mod : { default: mod };
+    };
+Object.defineProperty(exports, '__esModule', { value: true });
+exports.createCard = void 0;
+var core = __importStar(require('@actions/core'));
+var github = __importStar(require('@actions/github'));
+var node_fetch_1 = __importDefault(require('node-fetch'));
 try {
-    const apiKey = process.env['TRELLO_API_KEY'];
-    const apiToken = process.env['TRELLO_API_TOKEN'];
-    const boardId = process.env['TRELLO_BOARD_ID'];
-    const action = core.getInput('trello-action');
+    var apiKey = process.env['TRELLO_API_KEY'];
+    var apiToken = process.env['TRELLO_API_TOKEN'];
+    var boardId = process.env['TRELLO_BOARD_ID'];
+    var action = core.getInput('trello-action');
     switch (action) {
         case 'create_card_when_issue_opened':
             createCardWhenIssueOpen(apiKey, apiToken, boardId);
@@ -25,18 +78,22 @@ try {
 }
 
 function createCardWhenIssueOpen(apiKey, apiToken, boardId) {
-    const listId = process.env['TRELLO_LIST_ID'];
-    const issue = github.context.payload.issue;
+    var listId = process.env['TRELLO_LIST_ID'];
+    var issue = github.context.payload.issue;
     if (!issue) return;
-    const number = issue.number;
-    const title = issue.title;
-    const description = issue.body;
-    const url = issue.html_url;
-    const assignees = issue.assignees.map((assignee) => assignee.login);
-    const issueLabelNames = issue.labels.map((label) => label.name);
+    var number = issue.number;
+    var title = issue.title;
+    var description = issue.body;
+    var url = issue.html_url;
+    var assignees = issue.assignees.map(function(assignee) {
+        return assignee.login;
+    });
+    var issueLabelNames = issue.labels.map(function(label) {
+        return label.name;
+    });
     getLabelsOfBoard(apiKey, apiToken, boardId).then(function(response) {
-        const trelloLabels = response;
-        const trelloLabelIds = [];
+        var trelloLabels = response;
+        var trelloLabelIds = [];
         issueLabelNames.forEach(function(issueLabelName) {
             trelloLabels.forEach(function(trelloLabel) {
                 if (trelloLabel.name == issueLabelName) {
@@ -45,8 +102,8 @@ function createCardWhenIssueOpen(apiKey, apiToken, boardId) {
             });
         });
         getMembersOfBoard(apiKey, apiToken, boardId).then(function(response) {
-            const members = response;
-            const memberIds = [];
+            var members = response;
+            var memberIds = [];
             assignees.forEach(function(assignee) {
                 members.forEach(function(member) {
                     if (member.username == assignee) {
@@ -54,7 +111,7 @@ function createCardWhenIssueOpen(apiKey, apiToken, boardId) {
                     }
                 });
             });
-            const cardParams = {
+            var cardParams = {
                 number: number,
                 title: title,
                 description: description,
@@ -73,24 +130,24 @@ function createCardWhenIssueOpen(apiKey, apiToken, boardId) {
 
 function moveCardWhenPullRequestOpen(apiKey, apiToken, boardId) {
     var _a, _b;
-    const departureListId = process.env['TRELLO_DEPARTURE_LIST_ID'];
-    const destinationListId = process.env['TRELLO_DESTINATION_LIST_ID'];
-    const pullRequest = github.context.payload.pull_request;
+    var departureListId = process.env['TRELLO_DEPARTURE_LIST_ID'];
+    var destinationListId = process.env['TRELLO_DESTINATION_LIST_ID'];
+    var pullRequest = github.context.payload.pull_request;
     if (!pullRequest) return;
-    const issue_number =
+    var issue_number =
         (_b =
             (_a = pullRequest.body) === null || _a === void 0 ?
             void 0 :
             _a.match(/#[0-9]+/)) === null || _b === void 0 ?
         void 0 :
         _b[0].slice(1);
-    const url = pullRequest.html_url;
-    const reviewers = pullRequest.requested_reviewers.map(
-        (reviewer) => reviewer.login
-    );
+    var url = pullRequest.html_url;
+    var reviewers = pullRequest.requested_reviewers.map(function(reviewer) {
+        return reviewer.login;
+    });
     getMembersOfBoard(apiKey, apiToken, boardId).then(function(response) {
-        const members = response;
-        const additionalMemberIds = [];
+        var members = response;
+        var additionalMemberIds = [];
         reviewers.forEach(function(reviewer) {
             members.forEach(function(member) {
                 if (member.username == reviewer) {
@@ -99,18 +156,18 @@ function moveCardWhenPullRequestOpen(apiKey, apiToken, boardId) {
             });
         });
         getCardsOfList(apiKey, apiToken, departureListId).then(function(response) {
-            const cards = response;
-            let cardId;
-            let existingMemberIds = [];
+            var cards = response;
+            var cardId;
+            var existingMemberIds = [];
             cards.some(function(card) {
-                const card_issue_number = card.name.match(/#[0-9]+/)[0].slice(1);
+                var card_issue_number = card.name.match(/#[0-9]+/)[0].slice(1);
                 if (card_issue_number == issue_number) {
                     cardId = card.id;
                     existingMemberIds = card.idMembers;
                     return true;
                 }
             });
-            const cardParams = {
+            var cardParams = {
                 destinationListId: destinationListId,
                 memberIds: existingMemberIds.concat(additionalMemberIds).join(),
             };
@@ -127,22 +184,22 @@ function moveCardWhenPullRequestOpen(apiKey, apiToken, boardId) {
 
 function moveCardWhenPullRequestClose(apiKey, apiToken, boardId) {
     var _a;
-    const departureListId = process.env['TRELLO_DEPARTURE_LIST_ID'];
-    const destinationListId = process.env['TRELLO_DESTINATION_LIST_ID'];
-    const pullRequest = github.context.payload.pull_request;
+    var departureListId = process.env['TRELLO_DEPARTURE_LIST_ID'];
+    var destinationListId = process.env['TRELLO_DESTINATION_LIST_ID'];
+    var pullRequest = github.context.payload.pull_request;
     if (!pullRequest) return;
-    const issue_numbers =
+    var issue_numbers =
         (_a = pullRequest.body) === null || _a === void 0 ?
         void 0 :
         _a.match(/#[0-9]+/);
     if (!issue_numbers || issue_numbers.length === 0) return;
-    const issue_number = issue_numbers[0].slice(1);
-    const reviewers = pullRequest.requested_reviewers.map(
-        (reviewer) => reviewer.login
-    );
+    var issue_number = issue_numbers[0].slice(1);
+    var reviewers = pullRequest.requested_reviewers.map(function(reviewer) {
+        return reviewer.login;
+    });
     getMembersOfBoard(apiKey, apiToken, boardId).then(function(response) {
-        const members = response;
-        const additionalMemberIds = [];
+        var members = response;
+        var additionalMemberIds = [];
         reviewers.forEach(function(reviewer) {
             members.forEach(function(member) {
                 if (member.username == reviewer) {
@@ -151,18 +208,18 @@ function moveCardWhenPullRequestClose(apiKey, apiToken, boardId) {
             });
         });
         getCardsOfList(apiKey, apiToken, departureListId).then(function(response) {
-            const cards = response;
-            let cardId;
-            let existingMemberIds = [];
+            var cards = response;
+            var cardId;
+            var existingMemberIds = [];
             cards.some(function(card) {
-                const card_issue_number = card.name.match(/#[0-9]+/)[0].slice(1);
+                var card_issue_number = card.name.match(/#[0-9]+/)[0].slice(1);
                 if (card_issue_number == issue_number) {
                     cardId = card.id;
                     existingMemberIds = card.idMembers;
                     return true;
                 }
             });
-            const cardParams = {
+            var cardParams = {
                 destinationListId: destinationListId,
                 memberIds: existingMemberIds.concat(additionalMemberIds).join(),
             };
@@ -176,24 +233,24 @@ function moveCardWhenPullRequestClose(apiKey, apiToken, boardId) {
 }
 
 function moveCardWhenIssueClose(apiKey, apiToken) {
-    const departureListId = process.env['TRELLO_DEPARTURE_LIST_ID'];
-    const destinationListId = process.env['TRELLO_DESTINATION_LIST_ID'];
-    const issue = github.context.payload.issue;
+    var departureListId = process.env['TRELLO_DEPARTURE_LIST_ID'];
+    var destinationListId = process.env['TRELLO_DESTINATION_LIST_ID'];
+    var issue = github.context.payload.issue;
     if (!issue) return;
-    const issue_number = issue.number;
+    var issue_number = issue.number;
     getCardsOfList(apiKey, apiToken, departureListId).then(function(response) {
-        const cards = response;
-        let cardId;
-        let existingMemberIds = [];
+        var cards = response;
+        var cardId;
+        var existingMemberIds = [];
         cards.some(function(card) {
-            const card_issue_number = card.name.match(/#[0-9]+/)[0].slice(1);
+            var card_issue_number = card.name.match(/#[0-9]+/)[0].slice(1);
             if (card_issue_number == issue_number) {
                 cardId = card.id;
                 existingMemberIds = card.idMembers;
                 return true;
             }
         });
-        const cardParams = {
+        var cardParams = {
             destinationListId: destinationListId,
             memberIds: existingMemberIds.join(),
         };
@@ -207,10 +264,13 @@ function moveCardWhenIssueClose(apiKey, apiToken) {
 
 function getLabelsOfBoard(apiKey, apiToken, boardId) {
     return new Promise(function(resolve, reject) {
-        fetch(
-                `https://api.trello.com/1/boards/${boardId}/labels?key=${apiKey}&token=${apiToken}`
-            )
-            .then(function(body) {
+        (0, node_fetch_1.default)(
+            'https://api.trello.com/1/boards/'
+            .concat(boardId, '/labels?key=')
+            .concat(apiKey, '&token=')
+            .concat(apiToken)
+        )
+        .then(function(body) {
                 resolve(body.json());
             })
             .catch(function(error) {
@@ -221,10 +281,13 @@ function getLabelsOfBoard(apiKey, apiToken, boardId) {
 
 function getMembersOfBoard(apiKey, apiToken, boardId) {
     return new Promise(function(resolve, reject) {
-        fetch(
-                `https://api.trello.com/1/boards/${boardId}/members?key=${apiKey}&token=${apiToken}`
-            )
-            .then(function(body) {
+        (0, node_fetch_1.default)(
+            'https://api.trello.com/1/boards/'
+            .concat(boardId, '/members?key=')
+            .concat(apiKey, '&token=')
+            .concat(apiToken)
+        )
+        .then(function(body) {
                 resolve(body.json());
             })
             .catch(function(error) {
@@ -235,10 +298,13 @@ function getMembersOfBoard(apiKey, apiToken, boardId) {
 
 function getCardsOfList(apiKey, apiToken, listId) {
     return new Promise(function(resolve, reject) {
-        fetch(
-                `https://api.trello.com/1/lists/${listId}/cards?key=${apiKey}&token=${apiToken}`
-            )
-            .then(function(body) {
+        (0, node_fetch_1.default)(
+            'https://api.trello.com/1/lists/'
+            .concat(listId, '/cards?key=')
+            .concat(apiKey, '&token=')
+            .concat(apiToken)
+        )
+        .then(function(body) {
                 resolve(body.json());
             })
             .catch(function(error) {
@@ -246,8 +312,9 @@ function getCardsOfList(apiKey, apiToken, listId) {
             });
     });
 }
-export function createCard(apiKey, apiToken, listId, params) {
-    const options = {
+
+function createCard(apiKey, apiToken, listId, params) {
+    var options = {
         method: 'POST',
         url: 'https://api.trello.com/1/cards',
         form: {
@@ -255,7 +322,7 @@ export function createCard(apiKey, apiToken, listId, params) {
             keepFromSource: 'all',
             key: apiKey,
             token: apiToken,
-            name: `[#${params.number}] ${params.title}`,
+            name: '[#'.concat(params.number, '] ').concat(params.title),
             desc: params.description,
             urlSource: params.url,
             idMembers: params.memberIds,
@@ -264,15 +331,15 @@ export function createCard(apiKey, apiToken, listId, params) {
         json: true,
     };
     return new Promise(function(resolve, reject) {
-        fetch(options.url, {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(options.form),
-            })
-            .then(function(body) {
+        (0, node_fetch_1.default)(options.url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(options.form),
+        })
+        .then(function(body) {
                 resolve(body);
             })
             .catch(function(error) {
@@ -280,26 +347,30 @@ export function createCard(apiKey, apiToken, listId, params) {
             });
     });
 }
+exports.createCard = createCard;
 
 function putCard(apiKey, apiToken, cardId, params) {
-    const options = {
+    var options = {
         method: 'PUT',
-        url: `https://api.trello.com/1/cards/${cardId}?key=${apiKey}&token=${apiToken}`,
+        url: 'https://api.trello.com/1/cards/'
+            .concat(cardId, '?key=')
+            .concat(apiKey, '&token=')
+            .concat(apiToken),
         form: {
             idList: params.destinationListId,
             idMembers: params.memberIds,
         },
     };
     return new Promise(function(resolve, reject) {
-        fetch(options.url, {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(options.form),
-            })
-            .then(function(body) {
+        (0, node_fetch_1.default)(options.url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(options.form),
+        })
+        .then(function(body) {
                 resolve(body.json());
             })
             .catch(function(error) {
@@ -309,27 +380,84 @@ function putCard(apiKey, apiToken, cardId, params) {
 }
 
 function addUrlSourceToCard(apiKey, apiToken, cardId, url) {
-    const options = {
+    var options = {
         method: 'POST',
-        url: `https://api.trello.com/1/cards/${cardId}/attachments?key=${apiKey}&token=${apiToken}`,
+        url: 'https://api.trello.com/1/cards/'
+            .concat(cardId, '/attachments?key=')
+            .concat(apiKey, '&token=')
+            .concat(apiToken),
         form: {
             url: url,
         },
     };
     return new Promise(function(resolve, reject) {
-        fetch(options.url, {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(options.form),
-            })
-            .then(function(body) {
+        (0, node_fetch_1.default)(options.url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(options.form),
+        })
+        .then(function(body) {
                 resolve(body.json());
             })
             .catch(function(error) {
                 reject(error);
             });
     });
+}	method: 'PUT',
+		url: 'https://api.trello.com/1/cards/'
+			.concat(cardId, '?key=')
+			.concat(apiKey, '&token=')
+			.concat(apiToken),
+		form: {
+			idList: params.destinationListId,
+			idMembers: params.memberIds,
+		},
+	};
+	return new Promise(function (resolve, reject) {
+		(0, node_fetch_1.default)(options.url, {
+			method: 'POST',
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(options.form),
+		})
+			.then(function (body) {
+				resolve(body.json());
+			})
+			.catch(function (error) {
+				reject(error);
+			});
+	});
+}
+function addUrlSourceToCard(apiKey, apiToken, cardId, url) {
+	var options = {
+		method: 'POST',
+		url: 'https://api.trello.com/1/cards/'
+			.concat(cardId, '/attachments?key=')
+			.concat(apiKey, '&token=')
+			.concat(apiToken),
+		form: {
+			url: url,
+		},
+	};
+	return new Promise(function (resolve, reject) {
+		(0, node_fetch_1.default)(options.url, {
+			method: 'POST',
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(options.form),
+		})
+			.then(function (body) {
+				resolve(body.json());
+			})
+			.catch(function (error) {
+				reject(error);
+			});
+	});
 }
